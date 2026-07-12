@@ -24,6 +24,15 @@ function WajibLogin({ children }) {
   return children;
 }
 
+// Kebalikan WajibLogin: halaman Masuk/Daftar tidak masuk akal dilihat
+// orang yang sudah login — langsung alihkan ke tempat yang wajar.
+function HanyaTamu({ children }) {
+  const { user, siap } = useAuth();
+  if (!siap) return null;
+  if (user) return <Navigate to="/travel/riwayat" replace />;
+  return children;
+}
+
 function GulirKeAtas() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -60,8 +69,8 @@ export default function App() {
 
         {/* Halaman akun bersama (netral) */}
         <Route element={<SitusLayout situs="akun"><Outlet /></SitusLayout>}>
-          <Route path="/masuk" element={<Masuk />} />
-          <Route path="/daftar" element={<Daftar />} />
+          <Route path="/masuk" element={<HanyaTamu><Masuk /></HanyaTamu>} />
+          <Route path="/daftar" element={<HanyaTamu><Daftar /></HanyaTamu>} />
           <Route path="/undang" element={<WajibLogin><Undang /></WajibLogin>} />
           <Route path="/akun/pengaturan" element={<WajibLogin><Pengaturan /></WajibLogin>} />
         </Route>
