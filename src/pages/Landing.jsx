@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { WA_ADMIN } from "../data/dummy.js";
+import { useAuth } from "../lib/store.jsx";
+import ProfilMenu from "../components/ProfilMenu.jsx";
 
 export default function Landing() {
+  const { user, siap, logout } = useAuth();
+
   return (
     <div className="landing">
       <div className="landing-atas">
@@ -11,8 +15,14 @@ export default function Landing() {
           </span>
         </span>
         <div className="landing-akun">
-          <Link to="/masuk" className="btn btn-garis btn-kecil">Masuk</Link>
-          <Link to="/daftar" className="btn btn-utama btn-kecil">Daftar</Link>
+          {!siap ? null : user ? (
+            <ProfilMenu user={user} onKeluar={logout} />
+          ) : (
+            <>
+              <Link to="/masuk" className="btn btn-garis btn-kecil">Masuk</Link>
+              <Link to="/daftar" className="btn btn-utama btn-kecil">Daftar</Link>
+            </>
+          )}
         </div>
       </div>
 
