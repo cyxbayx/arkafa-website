@@ -137,6 +137,23 @@ ruteAuth.post("/masuk", async (req, res) => {
   res.json({ user: amanUser(user), token: buatToken(user) });
 });
 
+ruteAuth.patch("/saya", wajibLogin, async (req, res) => {
+  const { nama, sandiBaru } = req.body || {};
+  const data = {};
+  if (nama?.trim()) data.nama = nama.trim();
+  if (sandiBaru) {
+    if (sandiBaru.length < 8) {
+      return res.status(400).json({ error: "Kata sandi baru minimal 8 karakter." });
+    }
+    data.sandiHash = bcrypt.hashSync(sandiBaru, 10);
+  }
+  if (Object.keys(data).length === 0) {
+    return res.status(400).json({ error: "Tidak ada perubahan untuk disimpan." });
+  }
+  const user = await prisma.user.update({ where: { id: req.user.id }, data });
+  res.json({ user: amanUser(user) });
+});
+
 ruteAuth.get("/saya", wajibLogin, async (req, res) => {
   const teman = await prisma.user.findMany({
     where: { referredById: req.user.id, verified: true },

@@ -129,6 +129,37 @@ a:hover { color: var(--tinta); }
 .nav-link.aktif { color: var(--tinta); background: var(--stabilo); }
 .nav-user { color: var(--sepia); font-size: 0.92rem; font-family: "Caveat", cursive; font-weight: 600; font-size: 1.15rem; }
 
+/* ---------- Menu profil: avatar + dropdown (ganti klaster tautan akun) ---------- */
+.profil-menu { position: relative; }
+.profil-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--stabilo); border: 2px solid var(--tinta); color: var(--tinta);
+  font-family: "Caveat", cursive; font-weight: 700; font-size: 1.3rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: var(--bayangan);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.profil-avatar:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 rgba(43, 41, 38, 0.2); }
+.profil-avatar:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 rgba(43, 41, 38, 0.2); }
+.profil-dropdown {
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 60;
+  min-width: 210px; background: var(--kertas-2); color: var(--tinta);
+  border: 2px solid var(--tinta); border-radius: var(--sketsa-kecil);
+  box-shadow: var(--bayangan); padding: 6px; display: grid; gap: 2px;
+}
+.profil-dropdown-nama {
+  font-family: "Caveat", cursive; font-size: 1.15rem; font-weight: 700;
+  padding: 6px 10px 8px; border-bottom: 1.5px dashed var(--garis); margin-bottom: 4px;
+}
+.profil-dropdown-item {
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  font-family: "Patrick Hand", cursive; font-size: 0.98rem; color: var(--tinta);
+  padding: 8px 10px; border-radius: var(--sketsa-kecil); cursor: pointer;
+  text-decoration: none;
+}
+.profil-dropdown-item:hover { background: rgba(43, 41, 38, 0.07); text-decoration: none; }
+.profil-dropdown-keluar { color: #9a3412; }
+
 /* ---------- Tombol: gaya coretan tinta ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;

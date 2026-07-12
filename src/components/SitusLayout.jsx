@@ -1,6 +1,7 @@
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/store.jsx";
 import { WA_ADMIN } from "../data/dummy.js";
+import ProfilMenu from "./ProfilMenu.jsx";
 
 // Satu komponen layout, tiga identitas situs berbeda:
 // - travel  : Arkafa Travel (tema oranye)
@@ -81,13 +82,7 @@ export default function SitusLayout({ situs, children }) {
           )}
           <div className="nav-akun">
             {user ? (
-              <>
-                <NavLink to="/undang" className={kelas}>Undang Teman</NavLink>
-                <span className="nav-user">Hai, {user.nama.split(" ")[0]}!</span>
-                <button className="btn btn-garis btn-kecil" onClick={keluar}>
-                  Keluar
-                </button>
-              </>
+              <ProfilMenu user={user} onKeluar={keluar} />
             ) : (
               <>
                 <NavLink to="/masuk" className={kelas}>Masuk</NavLink>

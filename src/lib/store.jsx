@@ -76,6 +76,16 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  // --- Ubah nama dan/atau kata sandi ---
+  async function updateProfil({ nama, sandiBaru }) {
+    const { user: u } = await api("/auth/saya", {
+      method: "PATCH",
+      body: { nama, sandiBaru },
+    });
+    setUser(u);
+    return u;
+  }
+
   // --- Data milik pengguna (dari server) ---
   async function getBookings() {
     if (!user) return [];
@@ -108,7 +118,7 @@ export function AuthProvider({ children }) {
   }
 
   const value = {
-    user, siap, pending, register, verifyOtp, login, logout,
+    user, siap, pending, register, verifyOtp, login, logout, updateProfil,
     getBookings, getLinks, getEdits, saveEdit, getFriends,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

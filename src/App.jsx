@@ -12,6 +12,7 @@ import GaleriSaya from "./pages/studio/GaleriSaya.jsx";
 import Masuk from "./pages/akun/Masuk.jsx";
 import Daftar from "./pages/akun/Daftar.jsx";
 import Undang from "./pages/akun/Undang.jsx";
+import Pengaturan from "./pages/akun/Pengaturan.jsx";
 import Admin from "./pages/Admin.jsx";
 import { useAuth } from "./lib/store.jsx";
 
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/masuk" element={<Masuk />} />
           <Route path="/daftar" element={<Daftar />} />
           <Route path="/undang" element={<WajibLogin><Undang /></WajibLogin>} />
+          <Route path="/akun/pengaturan" element={<WajibLogin><Pengaturan /></WajibLogin>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
