@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../lib/store.jsx";
 
 export default function Daftar() {
   const { register, verifyOtp, pending } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [params] = useSearchParams();
 
   const [nama, setNama] = useState("");
@@ -130,7 +131,7 @@ export default function Daftar() {
           </form>
 
           <p style={{ marginTop: 14, fontSize: "0.9rem", textAlign: "center" }}>
-            Sudah punya akun? <Link to="/masuk">Masuk</Link>
+            Sudah punya akun? <Link to="/masuk" state={location.state}>Masuk</Link>
           </p>
         </div>
       </div>

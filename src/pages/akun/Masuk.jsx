@@ -96,7 +96,7 @@ export default function Masuk() {
           </form>
 
           <p style={{ marginTop: 14, fontSize: "0.9rem", textAlign: "center" }}>
-            Belum punya akun? <Link to="/daftar">Daftar sekarang</Link>
+            Belum punya akun? <Link to="/daftar" state={location.state}>Daftar sekarang</Link>
           </p>
 
           <div className="demo-info">

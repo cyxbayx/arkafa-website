@@ -25,11 +25,12 @@ function WajibLogin({ children }) {
 }
 
 // Kebalikan WajibLogin: halaman Masuk/Daftar tidak masuk akal dilihat
-// orang yang sudah login — langsung alihkan ke tempat yang wajar.
+// orang yang sudah login — kembalikan ke halaman asalnya kalau diketahui.
 function HanyaTamu({ children }) {
   const { user, siap } = useAuth();
+  const location = useLocation();
   if (!siap) return null;
-  if (user) return <Navigate to="/travel/riwayat" replace />;
+  if (user) return <Navigate to={location.state?.dari || "/travel/riwayat"} replace />;
   return children;
 }
 

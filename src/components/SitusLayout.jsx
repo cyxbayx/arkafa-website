@@ -85,8 +85,8 @@ export default function SitusLayout({ situs, children }) {
               <ProfilMenu user={user} onKeluar={keluar} />
             ) : (
               <>
-                <NavLink to="/masuk" className={kelas}>Masuk</NavLink>
-                <Link to="/daftar" className="btn btn-utama btn-kecil">Daftar</Link>
+                <NavLink to="/masuk" state={{ dari: pathname }} className={kelas}>Masuk</NavLink>
+                <Link to="/daftar" state={{ dari: pathname }} className="btn btn-utama btn-kecil">Daftar</Link>
               </>
             )}
           </div>

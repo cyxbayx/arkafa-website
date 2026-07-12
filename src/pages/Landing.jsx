@@ -19,8 +19,8 @@ export default function Landing() {
             <ProfilMenu user={user} onKeluar={logout} />
           ) : (
             <>
-              <Link to="/masuk" className="btn btn-garis btn-kecil">Masuk</Link>
-              <Link to="/daftar" className="btn btn-utama btn-kecil">Daftar</Link>
+              <Link to="/masuk" state={{ dari: "/" }} className="btn btn-garis btn-kecil">Masuk</Link>
+              <Link to="/daftar" state={{ dari: "/" }} className="btn btn-utama btn-kecil">Daftar</Link>
             </>
           )}
         </div>
