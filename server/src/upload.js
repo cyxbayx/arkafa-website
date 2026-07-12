@@ -7,12 +7,20 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-export const DIR_UPLOAD = path.join(__dirname, "..", "uploads");
+
+// Vercel (serverless): filesystem read-only & tidak permanen — upload dinonaktifkan
+// sampai tersambung object storage (mis. Cloudinary). Lokal/VPS: folder uploads.
+const DI_SERVERLESS = Boolean(process.env.VERCEL);
+export const DIR_UPLOAD = DI_SERVERLESS
+  ? path.join("/tmp", "arkafa-uploads")
+  : path.join(__dirname, "..", "uploads");
 
 // URL publik server API (dipakai membangun URL file di respons)
 export const URL_PUBLIK = process.env.PUBLIC_URL || "http://localhost:4000";
 
-fs.mkdirSync(DIR_UPLOAD, { recursive: true });
+try {
+  fs.mkdirSync(DIR_UPLOAD, { recursive: true });
+} catch { /* filesystem read-only — upload memang nonaktif di serverless */ }
 
 const EKST_SAH = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif"]);
 
@@ -29,6 +37,14 @@ export const unggah = multer({
 
 // Tulis buffer ke uploads/<folder>/<nama>. Mengembalikan URL publiknya.
 export function simpanFile(folder, namaFile, buffer) {
+  if (DI_SERVERLESS) {
+    const e = new Error(
+      "Upload file belum aktif di hosting gratis ini (serverless). " +
+      "Fitur ini jalan penuh di localhost; untuk publik perlu object storage (mis. Cloudinary)."
+    );
+    e.status = 400;
+    throw e;
+  }
   const dir = path.join(DIR_UPLOAD, folder);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, namaFile), buffer);

@@ -103,11 +103,15 @@ ruteAdmin.delete("/paket/:id", async (req, res) => {
 });
 
 // Upload/ganti foto paket → tersimpan di uploads/paket
-ruteAdmin.post("/paket/:id/foto", unggah.single("foto"), async (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "File foto belum dipilih." });
-  const url = simpanFile("paket", req.params.id + "-" + namaAcak(req.file.originalname), req.file.buffer);
-  const paket = await prisma.paket.update({ where: { id: req.params.id }, data: { gambar: url } });
-  res.json(paket);
+ruteAdmin.post("/paket/:id/foto", unggah.single("foto"), async (req, res, next) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "File foto belum dipilih." });
+    const url = simpanFile("paket", req.params.id + "-" + namaAcak(req.file.originalname), req.file.buffer);
+    const paket = await prisma.paket.update({ where: { id: req.params.id }, data: { gambar: url } });
+    res.json(paket);
+  } catch (e) {
+    next(e);
+  }
 });
 
 // ---- Bingkai booth ----
@@ -117,7 +121,8 @@ ruteAdmin.get("/bingkai", async (_req, res) => {
 });
 
 // Terima JSON (bingkai warna) maupun multipart dengan file "desain" (bingkai custom)
-ruteAdmin.post("/bingkai", unggah.single("desain"), async (req, res) => {
+ruteAdmin.post("/bingkai", unggah.single("desain"), async (req, res, next) => {
+  try {
   const { nama, bg, bg2, teks, sub } = req.body || {};
   if (!nama?.trim()) return res.status(400).json({ error: "Nama bingkai wajib diisi." });
   const id = "bk-" + Date.now().toString(36);
@@ -139,6 +144,9 @@ ruteAdmin.post("/bingkai", unggah.single("desain"), async (req, res) => {
     },
   });
   res.status(201).json(bingkai);
+  } catch (e) {
+    next(e);
+  }
 });
 
 async function sisaBingkaiAktif(kecualiId) {
@@ -172,7 +180,8 @@ ruteAdmin.get("/album", async (_req, res) => {
 });
 
 // Upload album baru: nama + (opsional) nomor WA pelanggan + masa berlaku + file foto
-ruteAdmin.post("/album", unggah.array("foto", 60), async (req, res) => {
+ruteAdmin.post("/album", unggah.array("foto", 60), async (req, res, next) => {
+  try {
   const { nama, wa, hari } = req.body || {};
   if (!nama?.trim()) return res.status(400).json({ error: "Nama album wajib diisi." });
   if (!req.files?.length) return res.status(400).json({ error: "Pilih minimal satu foto." });
@@ -202,6 +211,9 @@ ruteAdmin.post("/album", unggah.array("foto", 60), async (req, res) => {
     include: { _count: { select: { foto: true } } },
   });
   res.status(201).json(album);
+  } catch (e) {
+    next(e);
+  }
 });
 
 // Hapus album + seluruh file fotonya

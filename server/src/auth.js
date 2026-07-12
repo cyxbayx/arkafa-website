@@ -6,9 +6,6 @@ import { prisma } from "./db.js";
 const JWT_SECRET = process.env.JWT_SECRET || "rahasia-dev-jangan-dipakai-produksi";
 const MASA_TOKEN = "7d";
 
-// OTP demo disimpan di memori server (produksi: kirim via WhatsApp gateway + simpan hash di DB)
-const otpTertunda = new Map(); // wa -> { otp, kadaluwarsa }
-
 // Rate limit login sederhana: 5 percobaan gagal / 60 detik per nomor
 const gagalLogin = new Map(); // wa -> { hitung, sejak }
 
@@ -30,7 +27,7 @@ export function buatToken(user) {
 }
 
 function amanUser(u) {
-  const { sandiHash, ...aman } = u;
+  const { sandiHash, otp, otpBatas, ...aman } = u;
   return aman;
 }
 
@@ -80,6 +77,10 @@ ruteAuth.post("/daftar", async (req, res) => {
     referredById = pengundang.id;
   }
 
+  // OTP demo: dibuat di server dan disimpan di DB, "dikirim" dengan
+  // mengembalikannya di respons. Produksi: kirim lewat WhatsApp gateway
+  // dan JANGAN kembalikan di respons.
+  const otp = String(Math.floor(100000 + Math.random() * 900000));
   const user = await prisma.user.create({
     data: {
       nama: nama.trim(),
@@ -87,13 +88,10 @@ ruteAuth.post("/daftar", async (req, res) => {
       sandiHash: bcrypt.hashSync(sandi, 10),
       kodeReferral: buatKodeReferral(),
       referredById,
+      otp,
+      otpBatas: new Date(Date.now() + 5 * 60 * 1000),
     },
   });
-
-  // OTP demo: dibuat di server, "dikirim" dengan mengembalikannya di respons.
-  // Produksi: kirim lewat WhatsApp gateway dan JANGAN kembalikan di respons.
-  const otp = String(Math.floor(100000 + Math.random() * 900000));
-  otpTertunda.set(nomor, { otp, kadaluwarsa: Date.now() + 5 * 60 * 1000 });
 
   res.status(201).json({ user: amanUser(user), demoOtp: otp });
 });
@@ -101,15 +99,17 @@ ruteAuth.post("/daftar", async (req, res) => {
 ruteAuth.post("/verifikasi", async (req, res) => {
   const { wa, otp } = req.body || {};
   const nomor = normalisasiWA(wa);
-  const tertunda = otpTertunda.get(nomor);
-  if (!tertunda || tertunda.kadaluwarsa < Date.now()) {
+  const calon = await prisma.user.findUnique({ where: { wa: nomor } });
+  if (!calon || !calon.otp || !calon.otpBatas || calon.otpBatas < new Date()) {
     return res.status(400).json({ error: "OTP kedaluwarsa. Daftar ulang untuk kirim OTP baru." });
   }
-  if (tertunda.otp !== String(otp || "").trim()) {
+  if (calon.otp !== String(otp || "").trim()) {
     return res.status(400).json({ error: "Kode OTP salah." });
   }
-  otpTertunda.delete(nomor);
-  const user = await prisma.user.update({ where: { wa: nomor }, data: { verified: true } });
+  const user = await prisma.user.update({
+    where: { wa: nomor },
+    data: { verified: true, otp: null, otpBatas: null },
+  });
   res.json({ user: amanUser(user), token: buatToken(user) });
 });
 

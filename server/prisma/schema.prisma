@@ -2,7 +2,8 @@
 // Jalankan `npm run setup` setelah mengisi DATABASE_URL di .env
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"] // native = lokal; rhel = serverless Vercel
 }
 
 datasource db {
@@ -16,6 +17,8 @@ model User {
   wa           String    @unique // nomor WhatsApp (62…) — juga jadi username login
   sandiHash    String
   verified     Boolean   @default(false)
+  otp          String? // OTP pendaftaran (di DB agar tahan serverless)
+  otpBatas     DateTime? // masa berlaku OTP
   peran        String    @default("pelanggan") // pelanggan | admin
   kodeReferral String    @unique
   referredBy   User?     @relation("Referral", fields: [referredById], references: [id])
