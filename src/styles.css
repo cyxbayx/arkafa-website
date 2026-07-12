@@ -113,12 +113,14 @@ a:hover { color: var(--tinta); }
 .nav-menu {
   display: flex; gap: 4px; flex-wrap: wrap; align-items: center;
 }
-.nav-akun { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-/* Di layar sempit menu+akun mengalir jadi satu baris dari kiri (tidak "ngondor"
-   sendiri di kanan); baru dipisah kiri/kanan begitu ada ruang untuk satu baris. */
+.nav-akun { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; }
+/* Di layar sempit menu turun jadi baris sendiri di bawah logo, sementara
+   akun (avatar) tetap nempel pojok kanan atas sebaris dengan logo. */
+@media (max-width: 639px) {
+  .nav-menu { flex-basis: 100%; order: 3; }
+}
 @media (min-width: 640px) {
   .nav-menu { margin-left: 18px; }
-  .nav-akun { margin-left: auto; }
 }
 .nav-link {
   color: var(--tinta-2); padding: 6px 12px; font-size: 0.95rem;

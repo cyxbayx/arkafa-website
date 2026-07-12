@@ -42,10 +42,10 @@ export default function ProfilMenu({ user, onKeluar }) {
         <div className="profil-dropdown" role="menu">
           <div className="profil-dropdown-nama">Hai, {namaDepan}! 👋</div>
           <Link to="/akun/pengaturan" className="profil-dropdown-item" role="menuitem" onClick={() => setBuka(false)}>
-            ⚙️ Pengaturan Akun
+            Pengaturan Akun
           </Link>
           <Link to="/undang" className="profil-dropdown-item" role="menuitem" onClick={() => setBuka(false)}>
-            🤝 Undang Teman
+            Undang Teman
           </Link>
           <button
             type="button"
@@ -53,7 +53,7 @@ export default function ProfilMenu({ user, onKeluar }) {
             role="menuitem"
             onClick={() => { setBuka(false); onKeluar(); }}
           >
-            🚪 Keluar
+            Keluar
           </button>
         </div>
       )}
