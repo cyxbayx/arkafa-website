@@ -1,0 +1,110 @@
+// Skema database Arkafa — PostgreSQL (Neon)
+// Jalankan `npm run setup` setelah mengisi DATABASE_URL di .env
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  nama         String
+  wa           String    @unique // nomor WhatsApp (62…) — juga jadi username login
+  sandiHash    String
+  verified     Boolean   @default(false)
+  peran        String    @default("pelanggan") // pelanggan | admin
+  kodeReferral String    @unique
+  referredBy   User?     @relation("Referral", fields: [referredById], references: [id])
+  referredById String?
+  referrals    User[]    @relation("Referral")
+  dibuat       DateTime  @default(now())
+  pesanan      Pesanan[]
+  linkGaleri   LinkGaleri[]
+}
+
+model Paket {
+  id            String    @id // slug, mis. "bromo"
+  nama          String
+  lokasi        String
+  durasi        String
+  hargaPerOrang Int
+  minPeserta    Int
+  ringkas       String
+  fasilitas     String[]
+  kategori      String[] // id kategori acara: open|private|family|kantor|study
+  gambar        String? // URL/path foto; null = pakai /paket/{id}.jpg di frontend
+  aktif         Boolean   @default(true)
+  dihapus       Boolean   @default(false) // soft delete agar riwayat pesanan tetap utuh
+  pesanan       Pesanan[]
+}
+
+model Pesanan {
+  id       String   @id // mis. "PSN-2026-0412"
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String
+  paket    Paket    @relation(fields: [paketId], references: [id])
+  paketId  String
+  kategori String
+  tanggal  String // tanggal keberangkatan (ISO yyyy-mm-dd)
+  peserta  Int
+  total    Int
+  status   String   @default("Menunggu Konfirmasi")
+  dibuat   DateTime @default(now())
+}
+
+model Bingkai {
+  id      String  @id // slug, mis. "sketsa"
+  nama    String
+  bg      String
+  bg2     String?
+  gradien Boolean @default(false)
+  gambar  String? // desain custom: data URI / URL file
+  teks    String
+  sub     String
+  aktif   Boolean @default(true)
+  dihapus Boolean @default(false)
+  urutan  Int     @default(100)
+}
+
+model Album {
+  token       String  @id // token acak >= 16 karakter
+  nama        String
+  tanggal     String // tanggal sesi (ISO)
+  kedaluwarsa String // batas akses (ISO)
+  wa          String? // nomor WA pelanggan tujuan link (opsional)
+  foto        Foto[]
+  linkGaleri  LinkGaleri[]
+}
+
+model Foto {
+  id         String @id @default(cuid())
+  album      Album  @relation(fields: [albumToken], references: [token], onDelete: Cascade)
+  albumToken String
+  nama       String
+  url        String // data URI (demo) / URL object storage (produksi)
+}
+
+// Album yang "diterima" seorang pengguna (tampil di Galeri Saya)
+model LinkGaleri {
+  id         String @id @default(cuid())
+  user       User   @relation(fields: [userId], references: [id])
+  userId     String
+  album      Album  @relation(fields: [albumToken], references: [token])
+  albumToken String
+
+  @@unique([userId, albumToken])
+}
+
+model KodeSesi {
+  id     String   @id @default(cuid())
+  kode   String
+  wa     String
+  metode String
+  layout String
+  harga  Int
+  waktu  DateTime @default(now())
+}

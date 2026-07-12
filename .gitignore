@@ -1,0 +1,15 @@
+# dependensi & hasil build
+node_modules/
+dist/
+server/node_modules/
+
+# rahasia — JANGAN pernah di-commit
+server/.env
+.env
+
+# file upload lokal (di produksi pindah ke object storage)
+server/uploads/
+
+# lain-lain
+*.log
+Thumbs.db

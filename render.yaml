@@ -1,0 +1,18 @@
+# Blueprint deploy Arkafa di Render (plan free).
+# Satu web service: build frontend (Vite) lalu Express menyajikan API + hasil build.
+services:
+  - type: web
+    name: arkafa
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build && cd server && npm ci && npx prisma generate
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # diisi manual di dashboard (connection string Neon)
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PUBLIC_URL
+        sync: false # diisi manual: https://<nama-app>.onrender.com
